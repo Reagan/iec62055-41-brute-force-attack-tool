@@ -1,5 +1,7 @@
 package main.domain.attack;
 
+import edu.cmu.iec62055simulator.domain.TokenParameters;
+import edu.cmu.iec62055simulator.pos.Meter;
 import main.domain.Replacement;
 import main.domain.mode.AttackMode;
 import main.domain.mode.BitAttackMode;
@@ -156,8 +158,9 @@ public abstract class Attacker {
      * @return if the token is valid based on the generated
      * values from the generated token parameters
      */
-    public TokenParameters getTokenParameters(String _20DigitToken) {
-        Meter meter = new Meter();
+    public TokenParameters getTokenParameters(String _20DigitToken)
+        throws Exception {
+        Meter meter = new Meter(); // uses default location for Decoder key
         return meter.processToken(_20DigitToken);
     }
 
