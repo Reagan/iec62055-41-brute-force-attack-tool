@@ -29,13 +29,23 @@ public class BruteForceBitAttacker extends Attacker {
      */
     public void launchAttack () {
         Tic allProcessingTic = new Tic() ;
+        String currOutputFile = "" ;
         for (BigInteger bi = RANGE_START; bi.compareTo(RANGE_END) <= 0; bi = bi.add(BigInteger.ONE)) {
             if (replacementsUnchanged(bi, replacements)) { // make sure that replacements not varied
                 Tic specificTokenProcessingTic = new Tic() ;
                 TokenParameters tokenParameters = getTokenParameters(bi);
                 Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic) ;
                 Toc allTokenProcessingToc = new Toc(allProcessingTic) ;
-                saveToFile(tokenParameters, fileOutputPath, specificTokenProcessingToc, allTokenProcessingToc);
+                currOutputFile = formatTokenParams(attackVector,
+                        generatedToken,
+                        tokenParameters,
+                        validTokenStatus,
+                        attackMode,
+                        attackOrder,
+                        specificTokenProcessingToc,
+                        allTokenProcessingToc);
+
+                saveToFile(currOutputFile, fileOutputPath);
             }
             System.out.println(bi);
         }
@@ -57,18 +67,5 @@ public class BruteForceBitAttacker extends Attacker {
                 return false;
         }
         return true;
-    }
-
-    /**
-     * Formats the generated attack vector bit string
-     * @param tokenParameters attack vector details and bit string
-     * @param specificTokenProcessingToc current end processing time for all tokens
-     * @param allTokenProcessingToc end processing time for tokens
-     * @return
-     */
-    private String formatTokenParams (TokenParameters tokenParameters,
-                                      Toc specificTokenProcessingToc,
-                                      Toc allTokenProcessingToc) {
-
     }
 }

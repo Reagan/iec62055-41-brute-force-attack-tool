@@ -31,13 +31,23 @@ public class BruteForceTokenAttacker extends Attacker {
      */
     public void launchAttack() {
         Tic allProcessingTic = new Tic() ;
+        String currOutputFile = "" ;
         for (BigInteger bi = RANGE_START; bi.compareTo(RANGE_END) <= 0; bi = bi.add(BigInteger.ONE)) {
             if (replacementsUnchanged(bi, replacements)) { // make sure that replacements not varied
                 Tic specificTokenProcessingTic = new Tic() ;
                 TokenParameters tokenParameters = getTokenParameters(bi);
                 Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic) ;
                 Toc allTokenProcessingToc = new Toc(allProcessingTic) ;
-                saveToFile(tokenParameters, fileOutputPath, specificTokenProcessingToc, allTokenProcessingToc);
+                currOutputFile = formatTokenParams(attackVector,
+                                                    generatedToken,
+                                                    tokenParameters,
+                                                    validTokenStatus,
+                                                    attackMode,
+                                                    attackOrder,
+                                                    specificTokenProcessingToc,
+                                                    allTokenProcessingToc);
+
+                saveToFile(currOutputFile, fileOutputPath);
             }
             System.out.println(bi);
         }
@@ -78,21 +88,5 @@ public class BruteForceTokenAttacker extends Attacker {
     private int indexOf(BigInteger val, int index) {
         String bigIntegerStr = val.toString();
         return Integer.parseInt(bigIntegerStr.charAt(index) + "");
-    }
-
-    /**
-     * This method formats the attack vector and parameter details
-     * to a CSV string format
-     * @param tokenParameters parameters from decoded token
-     * @param specificTokenProcessingToc Toc for processing specific token
-     * @param allTokenProcessingToc Toc for processing all tokens
-     * @return
-     */
-    private String formatTokenParams (TokenParameters tokenParameters,
-                                      Toc specificTokenProcessingToc,
-                                      Toc allTokenProcessingToc) {
-        String formattedResultString = "" ;
-
-        return formattedResultString ;
     }
 }
