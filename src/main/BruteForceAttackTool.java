@@ -22,7 +22,13 @@ import org.apache.logging.log4j.Logger;
  * This program is used to generate brute force attacks
  * using an IEC62055-41:2014 compliant token generator and
  * token decoder to try and guess valid 20 digit tokens
- * an/or bit strings
+ * an/or bit strings. The IEC62055-41:2014 compliant
+ * POS application and meter are available at the following
+ * URLs:
+ * <ol>
+ *     <li>IEC62055-41:2014 Point of Sale Simulator @see <a href="https://github.com/Reagan/iec-62055-simulator">iec-62055-41 POS Simulator</a></li>
+ *     <li>IEC62055-41:2014 Point of Meter Simulator @see <a href="https://github.com/Reagan/iec62055-41-meter-simulator">iec-62055-41 POS Simulator</a></li>
+ * </ol>
  * Created by rmbitiru on 12/28/15.
  */
 public class BruteForceAttackTool {
@@ -68,7 +74,7 @@ public class BruteForceAttackTool {
      * -v <replacement_values>      :   specifies the replacement values for bits and positions specified
      *                                  in the -r replacement flag positions. The number of values in the
      *                                  replacement positions and replacement values must be the same
-     * -f <output_file>             :   specifies the output file to post the results
+     * -f <output_file>             :   specifies the output CSV file to post the results of the brute force attack
      *
      */
     public static void main(String[] args) {
@@ -149,10 +155,10 @@ public class BruteForceAttackTool {
      */
     private void launchAttack () {
         if (attackMode.getAttackMode() == AttackMode.Type.TOKEN) {
-            BruteForceTokenAttacker bfat = new BruteForceTokenAttacker(replacements, outputFilePath) ;
+            BruteForceTokenAttacker bfat = new BruteForceTokenAttacker(replacements, attackMode, attackOrder, outputFilePath) ;
             bfat.launchAttack() ;
         } else if (attackMode.getAttackMode() == AttackMode.Type.BIT) {
-            BruteForceBitAttacker bfbt = new BruteForceBitAttacker(replacements, outputFilePath) ;
+            BruteForceBitAttacker bfbt = new BruteForceBitAttacker(replacements, attackMode, attackOrder, outputFilePath) ;
             bfbt.launchAttack() ;
         }
     }

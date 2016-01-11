@@ -1,7 +1,5 @@
 package main.domain;
 
-import main.exception.InvalidReplacementsException;
-
 /**
  * Created by rmbitiru on 12/29/15.
  */
@@ -9,7 +7,6 @@ public class Replacement {
 
     private int position;
     private int replacement;
-    protected int currReplacement ;
 
     public Replacement() {}
 
@@ -32,5 +29,9 @@ public class Replacement {
 
     public void setReplacement(int replacement) {
         this.replacement = replacement;
+    }
+
+    public String toString () {
+        return replacement + "{" + position + "}" ;
     }
 }
