@@ -177,7 +177,7 @@ public abstract class Attacker {
      * Finds the location of a bit or digit in a 66 bit string
      * ot 20 digit token
      * @param haystack value from which to find distinct digit
-     * @param position oosition at which to search for value in haysytack
+     * @param position position at which to search for value in haysytack
      * @return whether the desired value was found in the entire string
      */
     private int indexOf(BigInteger haystack, int position) {

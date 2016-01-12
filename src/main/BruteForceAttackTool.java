@@ -135,11 +135,10 @@ public class BruteForceAttackTool {
         throws InconsistentReplacementsException {
         String desiredReplacementPositions = hyphenatedCharacterArgsAdapter.getFlagValue(supportedCommandLineArgsFlags[2]);
         String desiredReplacementValues = hyphenatedCharacterArgsAdapter.getFlagValue(supportedCommandLineArgsFlags[3]);
-        String[] replacementPositions = desiredReplacementPositions.split(".") ;
-        String[] replacementValues = desiredReplacementValues.split(".") ;
+        String[] replacementPositions = desiredReplacementPositions.split("\\.") ;
+        String[] replacementValues = desiredReplacementValues.split("\\.") ;
         Replacement[] rPositions = null ;
-        if (desiredReplacementPositions.trim().equals(desiredReplacementValues.trim())
-                && replacementPositions.length  == replacementValues.length) {
+        if (replacementPositions.length  == replacementValues.length) {
                 rPositions = new Replacement[replacementPositions.length] ;
                 for (int index =0 ; index < replacementPositions.length; index++) {
                     rPositions[index] = new Replacement(Integer.parseInt(replacementPositions[index].trim()),
