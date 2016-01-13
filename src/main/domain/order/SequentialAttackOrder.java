@@ -1,4 +1,4 @@
-package main.domain.order;
+package domain.order;
 
 /**
  * Created by rmbitiru on 12/29/15.

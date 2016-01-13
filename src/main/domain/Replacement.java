@@ -1,4 +1,4 @@
-package main.domain;
+package domain;
 
 /**
  * Created by rmbitiru on 12/29/15.

@@ -1,20 +1,18 @@
-package main;
-
 import com.outstare.arg.processor.adapter.HyphenatedCharacterArgsAdapter;
-import main.domain.Replacement;
-import main.domain.attack.BruteForceBitAttacker;
-import main.domain.attack.BruteForceTokenAttacker;
-import main.domain.mode.AttackMode;
-import main.domain.mode.BitAttackMode;
-import main.domain.mode.TokenAttackMode;
-import main.domain.order.AttackOrder;
-import main.domain.order.RandomAttackOrder;
-import main.domain.order.SequentialAttackOrder;
-import main.exception.InconsistentReplacementsException;
-import main.exception.InvalidAttackModeException;
-import main.exception.InvalidAttackOrderException;
-import main.exception.InvalidCommandLineArgumentException;
-import main.utils.Utils;
+import domain.Replacement;
+import domain.attack.BruteForceBitAttacker;
+import domain.attack.BruteForceTokenAttacker;
+import domain.mode.AttackMode;
+import domain.mode.BitAttackMode;
+import domain.mode.TokenAttackMode;
+import domain.order.AttackOrder;
+import domain.order.RandomAttackOrder;
+import domain.order.SequentialAttackOrder;
+import exception.InconsistentReplacementsException;
+import exception.InvalidAttackModeException;
+import exception.InvalidAttackOrderException;
+import exception.InvalidCommandLineArgumentException;
+import utils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

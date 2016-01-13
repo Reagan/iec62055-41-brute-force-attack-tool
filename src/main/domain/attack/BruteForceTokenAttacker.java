@@ -1,8 +1,8 @@
-package main.domain.attack;
+package domain.attack;
 
-import main.domain.Replacement;
-import main.domain.mode.AttackMode;
-import main.domain.order.AttackOrder;
+import domain.Replacement;
+import domain.mode.AttackMode;
+import domain.order.AttackOrder;
 
 import java.math.BigInteger;
 

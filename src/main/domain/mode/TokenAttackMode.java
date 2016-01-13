@@ -1,4 +1,4 @@
-package main.domain.mode;
+package domain.mode;
 
 /**
  * This class is used to perform brute force attacks

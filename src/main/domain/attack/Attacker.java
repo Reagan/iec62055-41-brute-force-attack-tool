@@ -1,16 +1,18 @@
-package main.domain.attack;
+package domain.attack;
 
 import edu.cmu.iec62055simulator.domain.TokenParameters;
 import edu.cmu.iec62055simulator.pos.Meter;
-import main.domain.Replacement;
-import main.domain.mode.AttackMode;
-import main.domain.mode.BitAttackMode;
-import main.domain.mode.TokenAttackMode;
-import main.domain.order.AttackOrder;
-import main.domain.order.RandomAttackOrder;
-import main.timestamp.Tic;
-import main.timestamp.Toc;
-import main.utils.Utils;
+import domain.Replacement;
+import domain.mode.AttackMode;
+import domain.mode.BitAttackMode;
+import domain.mode.TokenAttackMode;
+import domain.order.AttackOrder;
+import domain.order.RandomAttackOrder;
+import timestamp.Tic;
+import timestamp.Toc;
+import utils.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -27,6 +29,7 @@ public abstract class Attacker {
     private AttackOrder attackOrder ;
     private BigInteger rangeStart = new BigInteger("0", radix);
     private BigInteger rangeEnd = new BigInteger("0", radix);
+    private Logger logger = LogManager.getFormatterLogger("Attacker") ;
 
     /**
      * This method tests a number of tokens in the allowable range
@@ -37,6 +40,7 @@ public abstract class Attacker {
      * the tests
      */
     public void launchAttack() {
+        logger.info("brute force attack launched...") ;
         Tic allProcessingTic = new Tic() ;
         String currOutputFile = "" ; // output file to capture the log of the attack
         String attackVector = "" ; // bits or token digits used for the brute force attack
@@ -44,9 +48,9 @@ public abstract class Attacker {
         boolean validTokenStatus = true ; // specifies the results of validating the attack vector as valid
         TokenParameters generatedTokenParameters ;
         for (BigInteger bi = getRangeStart(); bi.compareTo(getRangeEnd()) <= 0; bi = bi.add(BigInteger.ONE)) {
-            // System.out.println("generated brute force attack token/66 bit string generated: " + bi);
+            logger.error("generated brute force attack token/66 bit string generated: " + bi);
             if (replacementsUnchanged(bi, replacements, radix)) { // make sure that replacements rules and positions are adhered to
-                System.out.println("\t#Valid 66 bit string/20 digit token generated. Processing...");
+                logger.error("\t#Generated 66 bit string/20 digit token generated. Processing...");
                 attackVector = generatedToken = bi.toString() ;
                 Tic specificTokenProcessingTic = new Tic() ;
                 try {
@@ -54,7 +58,8 @@ public abstract class Attacker {
                     displayDecodedTokenParameters(generatedTokenParameters) ;
                 } catch (Exception e) {
                     validTokenStatus = false  ;
-                    e.printStackTrace();
+                    logger.error("\t#Error. Generated token is not a valid token") ;
+                    // e.printStackTrace();
                     continue;
                 }
                 Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic) ;
@@ -69,7 +74,8 @@ public abstract class Attacker {
                         allTokenProcessingToc);
 
                 saveToFile(currOutputFile, fileOutputPath);
-            }
+            } else
+                logger.error("\t#Invalid token generated");
         }
     }
 
@@ -244,7 +250,7 @@ public abstract class Attacker {
      */
     private void displayDecodedTokenParameters(TokenParameters parameters) {
         Date dateOfIssue = parameters.getDateOfIssue().toDate() ;
-        edu.cmu.iec62055simulator.utils.Utils.i(String.format("Recovered Token parameters: \n" +
+        logger.error("Recovered Token parameters: \n" +
                         "Token class: %s \n" +
                         "Token subclass: %s\n" +
                         "random value: %s\n" +
@@ -261,6 +267,6 @@ public abstract class Attacker {
                 dateOfIssue,
                 dateOfIssue,
                 parameters.getAmount().getAmountPurchased(),
-                parameters.getCRC().getBitString()));
+                parameters.getCRC().getBitString());
     }
 }

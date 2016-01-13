@@ -1,4 +1,4 @@
-package main.exception;
+package exception;
 
 /**
  * Created by rmbitiru on 12/29/15.

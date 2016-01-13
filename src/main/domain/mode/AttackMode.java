@@ -1,4 +1,4 @@
-package main.domain.mode;
+package domain.mode;
 
 /**
  * Created by rmbitiru on 12/29/15.

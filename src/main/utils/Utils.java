@@ -1,6 +1,6 @@
-package main.utils;
+package utils;
 
-import main.domain.Replacement;
+import domain.Replacement;
 
 /**
  * Created by rmbitiru on 12/29/15.

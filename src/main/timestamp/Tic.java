@@ -1,4 +1,4 @@
-package main.timestamp;
+package timestamp;
 
 import org.joda.time.DateTime;
 
