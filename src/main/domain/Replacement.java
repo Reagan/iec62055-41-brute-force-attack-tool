@@ -32,6 +32,6 @@ public class Replacement {
     }
 
     public String toString () {
-        return replacement + "{" + position + "}" ;
+        return "replacement: " + replacement + " @position: " + position ;
     }
 }

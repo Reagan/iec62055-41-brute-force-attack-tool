@@ -13,6 +13,7 @@ import main.timestamp.Toc;
 import main.utils.Utils;
 
 import java.math.BigInteger;
+import java.util.Date;
 
 /**
  * Created by rmbitiru on 12/29/15.
@@ -21,10 +22,11 @@ public abstract class Attacker {
 
     protected Replacement[] replacements ;
     protected String fileOutputPath ;
+    protected int radix = 10 ; // default radix is 10
     private AttackMode attackMode ;
     private AttackOrder attackOrder ;
-    private BigInteger rangeStart = new BigInteger("0", 10);
-    private BigInteger rangeEnd = new BigInteger("0", 10);
+    private BigInteger rangeStart = new BigInteger("0", radix);
+    private BigInteger rangeEnd = new BigInteger("0", radix);
 
     /**
      * This method tests a number of tokens in the allowable range
@@ -42,13 +44,17 @@ public abstract class Attacker {
         boolean validTokenStatus = true ; // specifies the results of validating the attack vector as valid
         TokenParameters generatedTokenParameters ;
         for (BigInteger bi = getRangeStart(); bi.compareTo(getRangeEnd()) <= 0; bi = bi.add(BigInteger.ONE)) {
-            if (replacementsUnchanged(bi, replacements)) { // make sure that replacements are not varied
+            // System.out.println("generated brute force attack token/66 bit string generated: " + bi);
+            if (replacementsUnchanged(bi, replacements, radix)) { // make sure that replacements rules and positions are adhered to
+                System.out.println("\t#Valid 66 bit string/20 digit token generated. Processing...");
                 attackVector = generatedToken = bi.toString() ;
                 Tic specificTokenProcessingTic = new Tic() ;
                 try {
                     generatedTokenParameters = getTokenParameters(attackVector);
+                    displayDecodedTokenParameters(generatedTokenParameters) ;
                 } catch (Exception e) {
                     validTokenStatus = false  ;
+                    e.printStackTrace();
                     continue;
                 }
                 Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic) ;
@@ -64,7 +70,6 @@ public abstract class Attacker {
 
                 saveToFile(currOutputFile, fileOutputPath);
             }
-            System.out.println(bi);
         }
     }
 
@@ -90,15 +95,16 @@ public abstract class Attacker {
      * does not create a token that defies the rules specifies
      * in the replacement values and positions
      *
-     * @param val          attack vector
-     * @param replacements replacement values and positions
+     * @param val           attack vector
+     * @param replacements  replacement values and positions
+     * @param radix         the order of the BigInteger [2, 10]
      * @return whether the newly created token defies any of the
-     * replacement rules and positions
+     * replacement values at the defined positions
      */
-    private boolean replacementsUnchanged(BigInteger val, Replacement[] replacements) {
+    private boolean replacementsUnchanged(BigInteger val, Replacement[] replacements, int radix) {
         for (int index = 0; index < replacements.length; index++) {
             Replacement currReplacement = replacements[index];
-            if (currReplacement.getReplacement() != indexOf(val, currReplacement.getPosition()))
+            if (currReplacement.getReplacement() != indexOf(val, currReplacement.getPosition(), radix))
                 return false;
         }
         return true;
@@ -178,11 +184,16 @@ public abstract class Attacker {
      * ot 20 digit token
      * @param haystack value from which to find distinct digit
      * @param position position at which to search for value in haysytack
-     * @return whether the desired value was found in the entire string
+     * @return whether the desired value was found in the entire string. If
+     * the haystack string length is less than the desired positon,
+     * then -1 is returned
      */
-    private int indexOf(BigInteger haystack, int position) {
-        String bigIntegerStr = haystack.toString();
-        return Integer.parseInt(bigIntegerStr.charAt(position) + "");
+    private int indexOf(BigInteger haystack, int position, int radix) {
+        String bigIntegerStr = haystack.toString(radix);
+        if (position <= bigIntegerStr.length() - 1)
+            return Integer.parseInt(bigIntegerStr.charAt(position) + "");
+        else
+            return -1 ;
     }
 
     /** Accessors for attack mode and order **/
@@ -216,5 +227,40 @@ public abstract class Attacker {
 
     public void setRangeEnd(BigInteger rangeEnd) {
         this.rangeEnd = rangeEnd ;
+    }
+
+    public int getRadix () {
+        return radix ;
+    }
+
+    public void setRadix(int radix) {
+        this.radix = radix ;
+    }
+
+    /**
+     * Displays generated token parameters if the generated
+     * token is valid.
+     * @param parameters
+     */
+    private void displayDecodedTokenParameters(TokenParameters parameters) {
+        Date dateOfIssue = parameters.getDateOfIssue().toDate() ;
+        edu.cmu.iec62055simulator.utils.Utils.i(String.format("Recovered Token parameters: \n" +
+                        "Token class: %s \n" +
+                        "Token subclass: %s\n" +
+                        "random value: %s\n" +
+                        "Date Of Issue: %ta %tb %td %tT %tZ %tY \n" +
+                        "Units Purchased: %f\n" +
+                        "CRC: %s",
+                parameters.getTokenClass().getType().getBitSequence(),
+                parameters.getTokenSubClass().getType().getBitSequence(),
+                parameters.getRandomNo().getBitString(),
+                dateOfIssue,
+                dateOfIssue,
+                dateOfIssue,
+                dateOfIssue,
+                dateOfIssue,
+                dateOfIssue,
+                parameters.getAmount().getAmountPurchased(),
+                parameters.getCRC().getBitString()));
     }
 }

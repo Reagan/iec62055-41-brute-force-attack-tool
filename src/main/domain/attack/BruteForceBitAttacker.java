@@ -3,9 +3,6 @@ package main.domain.attack;
 import main.domain.Replacement;
 import main.domain.mode.AttackMode;
 import main.domain.order.AttackOrder;
-import main.timestamp.Tic;
-import main.timestamp.Toc;
-
 import java.math.BigInteger;
 
 /**
@@ -16,8 +13,9 @@ import java.math.BigInteger;
  */
 public class BruteForceBitAttacker extends Attacker {
 
-    private final BigInteger RANGE_START = new BigInteger("000000000000000000000000000000000000000000000000000000000000000000", 2);
-    private final BigInteger RANGE_END = new BigInteger("111111111111111111111111111111111111111111111111111111111111111111", 2);
+    private final int RADIX = 2 ;
+    private final BigInteger RANGE_START = new BigInteger("000000000000000000000000000000000000000000000000000000000000000000", RADIX);
+    private final BigInteger RANGE_END = new BigInteger("111111111111111111111111111111111111111111111111111111111111111111", RADIX);
 
     public BruteForceBitAttacker (Replacement[] replacements, AttackMode attackMode,
                                   AttackOrder attackOrder, String fileoutputPath) {
@@ -27,5 +25,6 @@ public class BruteForceBitAttacker extends Attacker {
         setAttackOrder(attackOrder);
         setRangeStart(RANGE_START) ;
         setRangeEnd(RANGE_END) ;
+        setRadix(RADIX);
     }
 }
