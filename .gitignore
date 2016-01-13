@@ -1,4 +1,5 @@
 # courtesy https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
+
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
 
 *.iml
@@ -51,3 +52,6 @@ crashlytics-build.properties
 
 # misc files 
 log4j-application.log
+
+# log folders 
+logs
