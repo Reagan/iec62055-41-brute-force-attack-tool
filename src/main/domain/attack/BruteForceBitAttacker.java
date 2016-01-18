@@ -20,7 +20,7 @@ public class BruteForceBitAttacker extends Attacker {
     public BruteForceBitAttacker (Replacement[] replacements, AttackMode attackMode,
                                   AttackOrder attackOrder, String fileoutputPath) {
         setReplacements(replacements);
-        setFileOutputPath(fileoutputPath);
+        setLogFileOutputPath(fileoutputPath);
         setAttackMode(attackMode);
         setAttackOrder(attackOrder);
         setRangeStart(RANGE_START) ;

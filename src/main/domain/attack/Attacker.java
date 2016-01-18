@@ -14,6 +14,7 @@ import timestamp.Tic;
 import timestamp.Toc;
 import utils.Utils;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Date;
 
@@ -23,7 +24,7 @@ import java.util.Date;
 public abstract class Attacker {
 
     protected Replacement[] replacements ;
-    protected String fileOutputPath ;
+    protected String logFileOutputPath;
     protected int radix = 10 ; // default radix is 10
     private AttackMode attackMode ;
     private AttackOrder attackOrder ;
@@ -40,42 +41,53 @@ public abstract class Attacker {
      * the tests
      */
     public void launchAttack() {
-        logger.info("brute force attack launched...") ;
-        Tic allProcessingTic = new Tic() ;
-        String currOutputFile = "" ; // output file to capture the log of the attack
-        String attackVector = "" ; // bits or token digits used for the brute force attack
-        String generatedToken = "" ; // token generated from the attack vector
-        boolean validTokenStatus = true ; // specifies the results of validating the attack vector as valid
-        TokenParameters generatedTokenParameters ;
-        for (BigInteger bi = getRangeStart(); bi.compareTo(getRangeEnd()) <= 0; bi = bi.add(BigInteger.ONE)) {
-            logger.error("generated brute force attack token/66 bit string generated: " + bi);
-            if (replacementsUnchanged(bi, replacements, radix)) { // make sure that replacements rules and positions are adhered to
-                logger.error("\t#Generated 66 bit string/20 digit token generated. Processing...");
-                attackVector = generatedToken = bi.toString() ;
-                Tic specificTokenProcessingTic = new Tic() ;
-                try {
-                    generatedTokenParameters = getTokenParameters(attackVector);
-                    displayDecodedTokenParameters(generatedTokenParameters, bi) ;
-                } catch (Exception e) {
-                    validTokenStatus = false  ;
-                    logger.error("\t#Error. Generated token is not a valid token") ;
-                    // e.printStackTrace();
-                    continue;
-                }
-                Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic) ;
-                Toc allTokenProcessingToc = new Toc(allProcessingTic) ;
-                currOutputFile = formatTokenParams(attackVector,
-                        generatedToken,
-                        generatedTokenParameters,
-                        validTokenStatus,
-                        attackMode,
-                        attackOrder,
-                        specificTokenProcessingToc,
-                        allTokenProcessingToc);
+        try {
+            logger.info("brute force attack launched...");
+            Tic allProcessingTic = new Tic();
+            String currOutputFile = ""; // output file to capture the log of the attack
+            String attackVector = ""; // bits or token digits used for the brute force attack
+            String generatedToken = ""; // token generated from the attack vector
+            boolean validTokenStatus = true; // specifies the results of validating the attack vector as valid
+            Utils.openFile(logFileOutputPath);
+            TokenParameters generatedTokenParameters;
+            for (BigInteger bi = getRangeStart(); bi.compareTo(getRangeEnd()) <= 0; bi = bi.add(BigInteger.ONE)) {
+                logger.error("generated brute force attackgit  token/66 bit string generated: " + bi);
+                if (replacementsUnchanged(bi, replacements, radix)) { // make sure that replacements rules and positions are adhered to
+                    logger.error("\t#Generated 66 bit string/20 digit token generated. Processing...");
+                    attackVector = generatedToken = bi.toString();
+                    Tic specificTokenProcessingTic = new Tic();
+                    try {
+                        generatedTokenParameters = getTokenParameters(attackVector);
+                        displayDecodedTokenParameters(generatedTokenParameters, bi);
+                    } catch (Exception e) {
+                        validTokenStatus = false;
+                        logger.error("\t#Error. Generated token is not a valid token");
+                        // e.printStackTrace();
+                        continue;
+                    }
+                    Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic);
+                    Toc allTokenProcessingToc = new Toc(allProcessingTic);
+                    currOutputFile = formatTokenParams(attackVector,
+                            generatedToken,
+                            generatedTokenParameters,
+                            validTokenStatus,
+                            attackMode,
+                            attackOrder,
+                            specificTokenProcessingToc,
+                            allTokenProcessingToc);
 
-                saveToFile(currOutputFile, fileOutputPath);
-            } else
-                logger.error("\t#Invalid token generated");
+                    saveToFile(currOutputFile);
+                } else
+                    logger.error("\t#Invalid token generated");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                Utils.closeFile(); // make sure log file is closed
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -88,12 +100,12 @@ public abstract class Attacker {
         this.replacements = replacements;
     }
 
-    public String getFileOutputPath() {
-        return fileOutputPath;
+    public String getLogFileOutputPath() {
+        return logFileOutputPath;
     }
 
-    public void setFileOutputPath(String fileOutputPath) {
-        this.fileOutputPath = fileOutputPath;
+    public void setLogFileOutputPath(String logFileOutputPath) {
+        this.logFileOutputPath = logFileOutputPath;
     }
 
     /**
@@ -179,10 +191,10 @@ public abstract class Attacker {
     /**
      * Saves line to file
      * @param line line of file to be written
-     * @param outputFilePath path to output file
      */
-    public void saveToFile(String line, String outputFilePath) {
-        Utils.writeToFile(line, outputFilePath) ;
+    public void saveToFile(String line)
+        throws  IOException {
+        Utils.writeToFile(line) ;
     }
 
     /**
