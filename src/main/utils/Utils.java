@@ -64,7 +64,7 @@ public class Utils {
     public static String concat(Replacement[] vals) {
         String res = "" ;
         for (Replacement val : vals)
-            res += val.toString() ;
+            res += val.toString() + " " ;
         return res ;
     }
 }
