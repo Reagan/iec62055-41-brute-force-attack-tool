@@ -15,6 +15,7 @@ public class BruteForceTokenAttacker extends Attacker {
 
     private final int RADIX = 10 ;
     private final BigInteger RANGE_START = new BigInteger("10000000000000000000",  RADIX);
+    // private final BigInteger RANGE_START = new BigInteger("10000000000001278799",  RADIX);
     private final BigInteger RANGE_END = new BigInteger("99999999999999999999", RADIX);
 
     public BruteForceTokenAttacker(Replacement[] replacements, AttackMode attackMode,

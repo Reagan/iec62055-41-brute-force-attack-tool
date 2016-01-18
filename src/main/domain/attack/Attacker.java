@@ -1,18 +1,18 @@
 package domain.attack;
 
-import edu.cmu.iec62055simulator.domain.TokenParameters;
-import edu.cmu.iec62055simulator.pos.Meter;
 import domain.Replacement;
 import domain.mode.AttackMode;
 import domain.mode.BitAttackMode;
 import domain.mode.TokenAttackMode;
 import domain.order.AttackOrder;
 import domain.order.RandomAttackOrder;
+import edu.cmu.iec62055simulator.domain.TokenParameters;
+import edu.cmu.iec62055simulator.pos.Meter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import timestamp.Tic;
 import timestamp.Toc;
 import utils.Utils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -55,7 +55,7 @@ public abstract class Attacker {
                 Tic specificTokenProcessingTic = new Tic() ;
                 try {
                     generatedTokenParameters = getTokenParameters(attackVector);
-                    displayDecodedTokenParameters(generatedTokenParameters) ;
+                    displayDecodedTokenParameters(generatedTokenParameters, bi) ;
                 } catch (Exception e) {
                     validTokenStatus = false  ;
                     logger.error("\t#Error. Generated token is not a valid token") ;
@@ -248,15 +248,17 @@ public abstract class Attacker {
      * token is valid.
      * @param parameters
      */
-    private void displayDecodedTokenParameters(TokenParameters parameters) {
+    private void displayDecodedTokenParameters(TokenParameters parameters, BigInteger attackValue) {
         Date dateOfIssue = parameters.getDateOfIssue().toDate() ;
         logger.error("Recovered Token parameters: \n" +
+                        "attack token/bitstring: \n" +
                         "Token class: %s \n" +
                         "Token subclass: %s\n" +
                         "random value: %s\n" +
                         "Date Of Issue: %ta %tb %td %tT %tZ %tY \n" +
                         "Units Purchased: %f\n" +
                         "CRC: %s",
+                attackValue.toString(radix),
                 parameters.getTokenClass().getType().getBitSequence(),
                 parameters.getTokenSubClass().getType().getBitSequence(),
                 parameters.getRandomNo().getBitString(),
