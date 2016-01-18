@@ -49,7 +49,7 @@ public abstract class Attacker {
             String generatedToken = ""; // token generated from the attack vector
             boolean validTokenStatus = true; // specifies the results of validating the attack vector as valid
             Utils.openFile(logFileOutputPath);
-            TokenParameters generatedTokenParameters;
+            TokenParameters generatedTokenParameters = new TokenParameters();
             for (BigInteger bi = getRangeStart(); bi.compareTo(getRangeEnd()) <= 0; bi = bi.add(BigInteger.ONE)) {
                 logger.error("generated brute force attackgit  token/66 bit string generated: " + bi);
                 if (replacementsUnchanged(bi, replacements, radix)) { // make sure that replacements rules and positions are adhered to
@@ -64,19 +64,20 @@ public abstract class Attacker {
                         logger.error("\t#Error. Generated token is not a valid token");
                         // e.printStackTrace();
                         continue;
-                    }
-                    Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic);
-                    Toc allTokenProcessingToc = new Toc(allProcessingTic);
-                    currOutputFile = formatTokenParams(attackVector,
-                            generatedToken,
-                            generatedTokenParameters,
-                            validTokenStatus,
-                            attackMode,
-                            attackOrder,
-                            specificTokenProcessingToc,
-                            allTokenProcessingToc);
+                    } finally {
+                        Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic);
+                        Toc allTokenProcessingToc = new Toc(allProcessingTic);
+                        currOutputFile = formatTokenParams(attackVector,
+                                generatedToken,
+                                generatedTokenParameters,
+                                validTokenStatus,
+                                attackMode,
+                                attackOrder,
+                                specificTokenProcessingToc,
+                                allTokenProcessingToc);
 
-                    saveToFile(currOutputFile);
+                        saveToFile(currOutputFile);
+                    }
                 } else
                     logger.error("\t#Invalid token generated");
             }
@@ -169,7 +170,7 @@ public abstract class Attacker {
                 + ((attackMode instanceof TokenAttackMode) ? "Y" : "") + DELIMITER
                 + (((attackMode instanceof TokenAttackMode) && (attackOrder instanceof RandomAttackOrder)) ? "R" : "S") + DELIMITER
                 + Utils.concat(getReplacements()) + DELIMITER
-                + ((attackMode instanceof BitAttackMode) ? "Y" : "") + DELIMITER
+                + ((attackMode instanceof BitAttackMode) ? "Y" : "N") + DELIMITER
                 + (((attackMode instanceof BitAttackMode) && (attackOrder instanceof RandomAttackOrder))  ? "R" : "S") + DELIMITER
                 + ((attackMode instanceof BitAttackMode) ? Utils.concat(getReplacements()) : "" ) + EOL ;
     }
