@@ -35,9 +35,12 @@ public class BruteForceAttackTool {
     private AttackOrder attackOrder ;
     private Replacement[] replacements ; // contains the replacement positions & values
     private String outputFilePath ;
+    private String decoderKeyPath ;
     private HyphenatedCharacterArgsAdapter hyphenatedCharacterArgsAdapter;
-    private String[] supportedCommandLineArgsFlags = {"m", "o", "r", "v", "f"};
-    private String[] supportedCommandLineDefaultArgs = {"token", "sequential", "", "", "output.csv"};
+    private String startAttackToken = "" ;
+    private String endAttackToken = "" ;
+    private String[] supportedCommandLineArgsFlags = {"m", "o", "r", "v", "f", "s", "e", "d"};
+    private String[] supportedCommandLineDefaultArgs = {"token", "sequential", "", "", "output.csv", "10000000000000000000", "99999999999999999999", "."};
 
     private final Logger logger = LogManager.getFormatterLogger("BruteForceAttackTool");
 
@@ -53,26 +56,28 @@ public class BruteForceAttackTool {
      *                           'bit' attack AttackMode is selected, then the 66 bits are
      *                           attacked.
      *
-     * -o <order> [random | sequential] : 1. 'random' <order> && 'token' <AttackMode>
-     *                                       random values of the 20 digit
-     *                                       token are generated for the brute force attack
-     *                                    2. 'sequential' <order> && 'token' <AttackMode>
-     *                                       sequential values of a token from the starting
-     *                                       index are selected and used to generate the
-     *                                       attack vector
-     *                                    3. 'random' <order> and 'bit' <AttackMode>
-     *                                       random bits are selected and used to create the
-     *                                       attack vector
-     *                                    4. 'sequential' <order> and 'bit' <AttackMode>
-     *                                        a sequential number of bits is selected
-     *                                        and a random value assigned to create an attack
-     *                                        vector
-     * -r <replacement_positions>   :   specifies the positions of tokens or bits at which values should be
-     *                                  replaced
-     * -v <replacement_values>      :   specifies the replacement values for bits and positions specified
-     *                                  in the -r replacement flag positions. The number of values in the
-     *                                  replacement positions and replacement values must be the same
-     * -f <output_file>             :   specifies the output CSV file to post the results of the brute force attack
+     * -o <order> [random | sequential]     :   1. 'random' <order> && 'token' <AttackMode>
+     *                                              random values of the 20 digit
+     *                                              token are generated for the brute force attack
+     *                                          2. 'sequential' <order> && 'token' <AttackMode>
+     *                                              sequential values of a token from the starting
+     *                                              index are selected and used to generate the
+     *                                              attack vector
+     *                                          3. 'random' <order> and 'bit' <AttackMode>
+     *                                              random bits are selected and used to create the
+     *                                              attack vector
+     *                                          4. 'sequential' <order> and 'bit' <AttackMode>
+     *                                              a sequential number of bits is selected
+     *                                              and a random value assigned to create an attack
+     *                                              vector
+     * -r <replacement_positions>           :   specifies the positions of tokens or bits at which values should be
+     *                                          replaced
+     * -v <replacement_values>              :   specifies the replacement values for bits and positions specified
+     *                                          in the -r replacement flag positions. The number of values in the
+     *                                          replacement positions and replacement values must be the same
+     * -f <output_file>                     :   specifies the output CSV file to post the results of the brute force attack
+     * -s <start_attack_token>              : specifies the start token from which the brute force attack should start
+     * -e <end_attack_token>                : specifies the end of the range of tokens for the brute force attack
      *
      */
     public static void main(String[] args) {
@@ -102,6 +107,9 @@ public class BruteForceAttackTool {
         attackMode = extractAttackMode() ;
         attackOrder = extractAttackOrder () ;
         replacements = extractReplacements();
+        startAttackToken = extractStartAttackToken() ;
+        endAttackToken = extractEndAttackToken() ;
+        decoderKeyPath = extractDecoderKeyPath() ;
     }
 
     private String extractOutputFilePath () {
@@ -146,16 +154,32 @@ public class BruteForceAttackTool {
         return rPositions ;
     }
 
+    private String extractStartAttackToken () {
+        return hyphenatedCharacterArgsAdapter.getFlagValue(supportedCommandLineArgsFlags[5]);
+    }
+
+    private String extractEndAttackToken () {
+        return hyphenatedCharacterArgsAdapter.getFlagValue(supportedCommandLineArgsFlags[6]) ;
+    }
+
+    private String extractDecoderKeyPath () {
+        return hyphenatedCharacterArgsAdapter.getFlagValue(supportedCommandLineArgsFlags[7]) ;
+    }
+
     /**
      * This code launches a brute force attack
      * based on command line parameters
      */
     private void launchAttack () {
         if (attackMode.getAttackMode() == AttackMode.Type.TOKEN) {
-            BruteForceTokenAttacker bfat = new BruteForceTokenAttacker(replacements, attackMode, attackOrder, outputFilePath) ;
+            BruteForceTokenAttacker bfat = new BruteForceTokenAttacker(startAttackToken, endAttackToken,
+                                                                        replacements, attackMode,
+                                                                        attackOrder, outputFilePath,
+                                                                        decoderKeyPath) ;
             bfat.launchAttack() ;
         } else if (attackMode.getAttackMode() == AttackMode.Type.BIT) {
-            BruteForceBitAttacker bfbt = new BruteForceBitAttacker(replacements, attackMode, attackOrder, outputFilePath) ;
+            BruteForceBitAttacker bfbt = new BruteForceBitAttacker(replacements, attackMode, attackOrder, outputFilePath,
+                                                                    decoderKeyPath) ;
             bfbt.launchAttack() ;
         }
     }

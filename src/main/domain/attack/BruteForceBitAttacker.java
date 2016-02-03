@@ -18,7 +18,8 @@ public class BruteForceBitAttacker extends Attacker {
     private final BigInteger RANGE_END = new BigInteger("111111111111111111111111111111111111111111111111111111111111111111", RADIX);
 
     public BruteForceBitAttacker (Replacement[] replacements, AttackMode attackMode,
-                                  AttackOrder attackOrder, String fileoutputPath) {
+                                  AttackOrder attackOrder, String fileoutputPath,
+                                  String decoderKeyPath) {
         setReplacements(replacements);
         setLogFileOutputPath(fileoutputPath);
         setAttackMode(attackMode);
@@ -26,5 +27,6 @@ public class BruteForceBitAttacker extends Attacker {
         setRangeStart(RANGE_START) ;
         setRangeEnd(RANGE_END) ;
         setRadix(RADIX);
+        setDecoderKeyPath (decoderKeyPath) ;
     }
 }

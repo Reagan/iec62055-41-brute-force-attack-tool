@@ -6,8 +6,8 @@ import domain.mode.BitAttackMode;
 import domain.mode.TokenAttackMode;
 import domain.order.AttackOrder;
 import domain.order.RandomAttackOrder;
-import edu.cmu.iec62055simulator.domain.TokenParameters;
-import edu.cmu.iec62055simulator.pos.Meter;
+import edu.cmu.iec62055meter.domain.TokenParameters;
+import edu.cmu.iec62055meter.pos.Meter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import timestamp.Tic;
@@ -30,7 +30,9 @@ public abstract class Attacker {
     private AttackOrder attackOrder ;
     private BigInteger rangeStart = new BigInteger("0", radix);
     private BigInteger rangeEnd = new BigInteger("0", radix);
+    private String decoderKeyPath = "." ;
     private Logger logger = LogManager.getFormatterLogger("Attacker") ;
+    private Meter meter ;
 
     /**
      * This method tests a number of tokens in the allowable range
@@ -50,10 +52,17 @@ public abstract class Attacker {
             boolean validTokenStatus = true; // specifies the results of validating the attack vector as valid
             Utils.openFile(logFileOutputPath);
             TokenParameters generatedTokenParameters = new TokenParameters();
+            meter = new Meter(getDecoderKeyPath());
+
+            // output checking vals
+            final BigInteger PERIODIC_CHECK = new BigInteger("10001") ;
+            final BigInteger CHECK_VALUE = new BigInteger("0") ;
+
             for (BigInteger bi = getRangeStart(); bi.compareTo(getRangeEnd()) <= 0; bi = bi.add(BigInteger.ONE)) {
-                logger.error("generated brute force attackgit  token/66 bit string generated: " + bi);
+                //logger.error("generated brute force attack token/66 bit string generated: " + bi);
+                if (bi.mod(PERIODIC_CHECK).equals(CHECK_VALUE))  System.out.println(bi);
+
                 if (replacementsUnchanged(bi, replacements, radix)) { // make sure that replacements rules and positions are adhered to
-                    logger.error("\t#Generated 66 bit string/20 digit token generated. Processing...");
                     attackVector = generatedToken = bi.toString();
                     Tic specificTokenProcessingTic = new Tic();
                     try {
@@ -61,7 +70,7 @@ public abstract class Attacker {
                         displayDecodedTokenParameters(generatedTokenParameters, bi);
                     } catch (Exception e) {
                         validTokenStatus = false;
-                        logger.error("\t#Error. Generated token is not a valid token");
+                        // logger.error("\t#Error. Generated token is not a valid token"); // !!!Reactivate to show not valid token
                         // e.printStackTrace();
                         continue;
                     } finally {
@@ -79,7 +88,7 @@ public abstract class Attacker {
                         saveToFile(currOutputFile);
                     }
                 } else
-                    logger.error("\t#Invalid token generated");
+                    logger.info("\t#Invalid token generated");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -185,7 +194,6 @@ public abstract class Attacker {
      */
     public TokenParameters getTokenParameters(String _20DigitToken)
         throws Exception {
-        Meter meter = new Meter(); // uses default location for Decoder key
         return meter.processToken(_20DigitToken);
     }
 
@@ -254,6 +262,14 @@ public abstract class Attacker {
 
     public void setRadix(int radix) {
         this.radix = radix ;
+    }
+
+    public String getDecoderKeyPath () {
+        return decoderKeyPath ;
+    }
+
+    public void setDecoderKeyPath (String decoderKeyPath) {
+        this.decoderKeyPath = decoderKeyPath ;
     }
 
     /**
