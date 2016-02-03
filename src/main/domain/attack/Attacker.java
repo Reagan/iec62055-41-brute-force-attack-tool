@@ -48,9 +48,6 @@ public abstract class Attacker {
         try {
             logger.info("brute force attack launched...");
 
-
-
-
             Utils.openFile(logFileOutputPath);
             meter = new Meter(getDecoderKeyPath());
 
@@ -68,10 +65,7 @@ public abstract class Attacker {
                     @Override
                     public void run() {
                         /** LAUNCH THREAD **/
-                        //logger.error("generated brute force attack token/66 bit string generated: " + bi);
-                        // vars --------
-                        // logger.error("Thread id: " + Thread.currentThread().getId());
-
+                        // logger.error("generated brute force attack token/66 bit string generated: " + vi);
                         String attackVector = ""; // bits or token digits used for the brute force attack
                         String generatedToken = ""; // token generated from the attack vector
                         boolean validTokenStatus = true; // specifies the results of validating the attack vector as valid
@@ -90,7 +84,7 @@ public abstract class Attacker {
                                 displayDecodedTokenParameters(generatedTokenParameters, vi);
                             } catch (Exception e) {
                                 validTokenStatus = false;
-                                // logger.error("\t#Error. Generated token is not a valid token"); // !!!Reactivate to show not valid token
+                                // logger.error("\t#Error. Generated token " + vi + " is not a valid token"); // !!!Reactivate to show not valid token
                                 // e.printStackTrace();
                             } finally {
                                 if (validTokenStatus) {
@@ -111,7 +105,7 @@ public abstract class Attacker {
                                 }
                             }
                         } else
-                            logger.info("\t#Invalid token generated");
+                            logger.error("\t#Invalid token generated");
                     }
                 });
 
@@ -119,6 +113,9 @@ public abstract class Attacker {
                 /** END THREAD **/
 
             }
+
+            executorService.shutdown();
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -308,14 +305,16 @@ public abstract class Attacker {
      */
     private void displayDecodedTokenParameters(TokenParameters parameters, BigInteger attackValue) {
         Date dateOfIssue = parameters.getDateOfIssue().toDate() ;
-        logger.error("Recovered Token parameters: \n" +
-                        "attack token/bitstring: \n" +
+        System.out.printf("-------------------------------\n" +
+                        "Recovered Token parameters: \n" +
+                        "attack token/bitstring: %s\n" +
                         "Token class: %s \n" +
                         "Token subclass: %s\n" +
                         "random value: %s\n" +
                         "Date Of Issue: %ta %tb %td %tT %tZ %tY \n" +
                         "Units Purchased: %f\n" +
-                        "CRC: %s",
+                        "CRC: %s" +
+                        "\n-------------------------------\n",
                 attackValue.toString(radix),
                 parameters.getTokenClass().getType().getBitSequence(),
                 parameters.getTokenSubClass().getType().getBitSequence(),

@@ -141,16 +141,19 @@ public class BruteForceAttackTool {
         throws InconsistentReplacementsException {
         String desiredReplacementPositions = hyphenatedCharacterArgsAdapter.getFlagValue(supportedCommandLineArgsFlags[2]);
         String desiredReplacementValues = hyphenatedCharacterArgsAdapter.getFlagValue(supportedCommandLineArgsFlags[3]);
-        String[] replacementPositions = desiredReplacementPositions.split("\\.") ;
-        String[] replacementValues = desiredReplacementValues.split("\\.") ;
-        Replacement[] rPositions = null ;
-        if (replacementPositions.length  == replacementValues.length) {
-                rPositions = new Replacement[replacementPositions.length] ;
-                for (int index =0 ; index < replacementPositions.length; index++) {
+        Replacement[] rPositions = new Replacement[0] ;
+
+        if (!desiredReplacementPositions.equals("") && !desiredReplacementPositions.equals("")) {
+            String[] replacementPositions = desiredReplacementPositions.split("\\.");
+            String[] replacementValues = desiredReplacementValues.split("\\.");
+            if (replacementPositions.length == replacementValues.length) {
+                rPositions = new Replacement[replacementPositions.length];
+                for (int index = 0; index < replacementPositions.length; index++) {
                     rPositions[index] = new Replacement(Integer.parseInt(replacementPositions[index].trim()),
-                                                        Integer.parseInt(replacementValues[index].trim())) ;
+                            Integer.parseInt(replacementValues[index].trim()));
                 }
-        } else throw new InconsistentReplacementsException("inconsistent replacement positions and values") ;
+            } else throw new InconsistentReplacementsException("inconsistent replacement positions and values");
+        }
         return rPositions ;
     }
 
