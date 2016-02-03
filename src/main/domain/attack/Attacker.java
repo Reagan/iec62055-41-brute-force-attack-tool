@@ -55,7 +55,7 @@ public abstract class Attacker {
             meter = new Meter(getDecoderKeyPath());
 
             // output checking vals
-            final BigInteger PERIODIC_CHECK = new BigInteger("10001") ;
+            final BigInteger PERIODIC_CHECK = new BigInteger("100001") ;
             final BigInteger CHECK_VALUE = new BigInteger("0") ;
 
             for (BigInteger bi = getRangeStart(); bi.compareTo(getRangeEnd()) <= 0; bi = bi.add(BigInteger.ONE)) {
