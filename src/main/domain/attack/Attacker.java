@@ -17,6 +17,8 @@ import utils.Utils;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by rmbitiru on 12/29/15.
@@ -45,50 +47,77 @@ public abstract class Attacker {
     public void launchAttack() {
         try {
             logger.info("brute force attack launched...");
-            Tic allProcessingTic = new Tic();
-            String currOutputFile = ""; // output file to capture the log of the attack
-            String attackVector = ""; // bits or token digits used for the brute force attack
-            String generatedToken = ""; // token generated from the attack vector
-            boolean validTokenStatus = true; // specifies the results of validating the attack vector as valid
+
+
+
+
             Utils.openFile(logFileOutputPath);
-            TokenParameters generatedTokenParameters = new TokenParameters();
             meter = new Meter(getDecoderKeyPath());
 
             // output checking vals
-            final BigInteger PERIODIC_CHECK = new BigInteger("100001") ;
+            final BigInteger PERIODIC_CHECK = new BigInteger("10001") ;
             final BigInteger CHECK_VALUE = new BigInteger("0") ;
 
+            // create an executor thread pool
+            ExecutorService executorService = Executors.newCachedThreadPool() ;
+
             for (BigInteger bi = getRangeStart(); bi.compareTo(getRangeEnd()) <= 0; bi = bi.add(BigInteger.ONE)) {
-                //logger.error("generated brute force attack token/66 bit string generated: " + bi);
-                if (bi.mod(PERIODIC_CHECK).equals(CHECK_VALUE))  System.out.println(bi);
 
-                if (replacementsUnchanged(bi, replacements, radix)) { // make sure that replacements rules and positions are adhered to
-                    attackVector = generatedToken = bi.toString();
-                    Tic specificTokenProcessingTic = new Tic();
-                    try {
-                        generatedTokenParameters = getTokenParameters(attackVector);
-                        displayDecodedTokenParameters(generatedTokenParameters, bi);
-                    } catch (Exception e) {
-                        validTokenStatus = false;
-                        // logger.error("\t#Error. Generated token is not a valid token"); // !!!Reactivate to show not valid token
-                        // e.printStackTrace();
-                        continue;
-                    } finally {
-                        Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic);
-                        Toc allTokenProcessingToc = new Toc(allProcessingTic);
-                        currOutputFile = formatTokenParams(attackVector,
-                                generatedToken,
-                                generatedTokenParameters,
-                                validTokenStatus,
-                                attackMode,
-                                attackOrder,
-                                specificTokenProcessingToc,
-                                allTokenProcessingToc);
+                final BigInteger vi = bi ;
+                executorService.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        /** LAUNCH THREAD **/
+                        //logger.error("generated brute force attack token/66 bit string generated: " + bi);
+                        // vars --------
+                        // logger.error("Thread id: " + Thread.currentThread().getId());
 
-                        saveToFile(currOutputFile);
+                        String attackVector = ""; // bits or token digits used for the brute force attack
+                        String generatedToken = ""; // token generated from the attack vector
+                        boolean validTokenStatus = true; // specifies the results of validating the attack vector as valid
+                        Tic allProcessingTic = new Tic();
+                        TokenParameters generatedTokenParameters = null ;
+                        String currOutputFile = ""; // output file to capture the log of the attack
+
+                        // processing ---------
+                        if (vi.mod(PERIODIC_CHECK).equals(CHECK_VALUE))  System.out.println(vi);
+
+                        if (replacementsUnchanged(vi, replacements, radix)) { // make sure that replacements rules and positions are adhered to
+                            attackVector = generatedToken = vi.toString();
+                            Tic specificTokenProcessingTic = new Tic();
+                            try {
+                                generatedTokenParameters = getTokenParameters(attackVector);
+                                displayDecodedTokenParameters(generatedTokenParameters, vi);
+                            } catch (Exception e) {
+                                validTokenStatus = false;
+                                // logger.error("\t#Error. Generated token is not a valid token"); // !!!Reactivate to show not valid token
+                                // e.printStackTrace();
+                            } finally {
+                                if (validTokenStatus) {
+                                    Toc specificTokenProcessingToc = new Toc(specificTokenProcessingTic);
+                                    Toc allTokenProcessingToc = new Toc(allProcessingTic);
+                                    currOutputFile = formatTokenParams(attackVector,
+                                            generatedToken,
+                                            generatedTokenParameters,
+                                            validTokenStatus,
+                                            attackMode,
+                                            attackOrder,
+                                            specificTokenProcessingToc,
+                                            allTokenProcessingToc);
+
+                                    try {
+                                        saveToFile(currOutputFile);
+                                    } catch (IOException e) {}
+                                }
+                            }
+                        } else
+                            logger.info("\t#Invalid token generated");
                     }
-                } else
-                    logger.info("\t#Invalid token generated");
+                });
+
+
+                /** END THREAD **/
+
             }
         } catch (IOException e) {
             e.printStackTrace();
